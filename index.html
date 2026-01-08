@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>提瓦特时光机 - 个人空间</title>
+  <style>
+    :root {
+      --genshin-gold: #ece5d8;
+      --genshin-dark: #3d4555;
+      --glass: rgba(0, 0, 0, 0.5);
+      --accent: #d3bc8e;
+      /* 原神主题金色 */
+    }
+
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: #1a1c22;
+      color: var(--genshin-gold);
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+    }
+
+    /* 背景图 */
+    .background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('https://pic.imgdb.cn/item/6618cc926865662325372338.jpg') center/cover no-repeat;
+      z-index: -1;
+      filter: brightness(0.6) blur(2px);
+    }
+
+    /* 樱花特效样式 */
+    .sakura {
+      position: absolute;
+      top: -10px;
+      background: #ffc0cb;
+      border-radius: 50% 50% 0 50%;
+      transform: rotate(45deg);
+      opacity: 0.8;
+      z-index: -1;
+      pointer-events: none;
+      animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translate(0, 105vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    /* 主体内容 */
+    .container {
+      max-width: 900px;
+      margin: 60px auto;
+      padding: 40px;
+      background: var(--glass);
+      backdrop-filter: blur(15px);
+      border-radius: 20px;
+      border: 1px solid rgba(211, 188, 142, 0.3);
+      min-height: 1500px;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+      transition: all 0.3s;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.5em;
+      color: var(--accent);
+      text-shadow: 0 0 10px rgba(211, 188, 142, 0.5);
+    }
+
+    /* 角色专属对话框 */
+    #dialogue-box {
+      background: rgba(61, 69, 85, 0.8);
+      padding: 25px;
+      border-radius: 15px;
+      border: 2px solid var(--accent);
+      margin-bottom: 40px;
+      position: relative;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    #dialogue-box::before {
+      content: "“";
+      font-size: 60px;
+      color: var(--accent);
+      position: absolute;
+      top: -20px;
+      left: 10px;
+      opacity: 0.5;
+    }
+
+    #dialogue-text {
+      font-size: 1.2em;
+      font-style: italic;
+      line-height: 1.6;
+    }
+
+    #dialogue-author {
+      text-align: right;
+      margin-top: 15px;
+      font-weight: bold;
+      color: var(--accent);
+    }
+
+    /* 角色组件 */
+    #character-box {
+      position: fixed;
+      bottom: -20px;
+      left: 0px;
+      width: 400px;
+      height: 400px;
+      z-index: 100;
+      pointer-events: none;
+      display: flex;
+      align-items: flex-end;
+      perspective: 1000px;
+    }
+
+    #character-img {
+      width: 100%;
+      transition: transform 0.1s ease-out, opacity 0.4s ease;
+      filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.8));
+      pointer-events: auto;
+      transform-origin: center bottom;
+    }
+
+    /* 角色切换面板 */
+    .char-selector {
+      position: fixed;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 15px;
+      border-radius: 30px;
+      border: 1px solid var(--accent);
+      z-index: 101;
+    }
+
+    .char-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: 0.3s;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .char-btn:hover,
+    .char-btn.active {
+      border-color: var(--accent);
+      box-shadow: 0 0 10px var(--accent);
+      transform: scale(1.1);
+    }
+
+    /* 右下角按钮 */
+    .nav-tools {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      z-index: 200;
+    }
+
+    .tool-btn {
+      width: 55px;
+      height: 55px;
+      background: var(--accent);
+      border-radius: 12px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      color: var(--genshin-dark);
+      font-weight: bold;
+      font-size: 24px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+      transition: 0.3s;
+    }
+
+    .tool-btn:hover {
+      background: #fff;
+      transform: translateY(-5px);
+    }
+
+    /* 音乐控制 */
+    .music-ctrl {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--glass);
+      padding: 8px 20px;
+      border-radius: 20px;
+      border: 1px solid var(--accent);
+      cursor: pointer;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .post-card {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 10px;
+      border-left: 4px solid var(--accent);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="background"></div>
+
+  <div class="music-ctrl" onclick="toggleMusic()">
+    <span id="music-status">🎵 播放 BGM</span>
+    <audio id="bgm" loop src="https://music.163.com/song/media/outer/url?id=1481164965.mp3"></audio>
+  </div>
+
+  <div class="char-selector">
+    <div class="char-btn active" onclick="changeChar('ayaka', this)"
+      style="background-image: url('https://api.paugram.com/genshin/avatar/?name=神里绫华')"></div>
+    <div class="char-btn" onclick="changeChar('zhongli', this)"
+      style="background-image: url('https://api.paugram.com/genshin/avatar/?name=钟离')"></div>
+    <div class="char-btn" onclick="changeChar('nahida', this)"
+      style="background-image: url('https://api.paugram.com/genshin/avatar/?name=纳西妲')"></div>
+    <div class="char-btn" onclick="changeChar('furina', this)"
+      style="background-image: url('https://api.paugram.com/genshin/avatar/?name=芙宁娜')"></div>
+    <div class="char-btn" onclick="changeChar('hutao', this)"
+      style="background-image: url('https://api.paugram.com/genshin/avatar/?name=胡桃')"></div>
+  </div>
+
+  <div class="container">
+    <h1>提瓦特时光日志</h1>
+
+    <div id="dialogue-box">
+      <div id="dialogue-text">“大好时光，正如这片美景…不妨再多待一会吧。”</div>
+      <div id="dialogue-author">—— 神里绫华</div>
+    </div>
+
+    <div class="post-card">
+      <h3>✨ 欢迎来到我的私人领地</h3>
+      <p>点击左侧头像，切换看板角色，听听他们想对你说什么。</p>
+    </div>
+
+    <div class="post-card" style="margin-top: 500px;">
+      <h3>📜 冒险记录</h3>
+      <p>（向下滚动以测试导航按钮和樱花效果）</p>
+    </div>
+  </div>
+
+  <div id="character-box">
+    <img id="character-img" src="https://pic.imgdb.cn/item/6618cdb368656623253a6691.png" alt="Character">
+  </div>
+
+  <div class="nav-tools">
+    <div class="tool-btn" onclick="window.scrollTo(0,0)">↑</div>
+    <div class="tool-btn" onclick="window.scrollTo(0,document.body.scrollHeight)">↓</div>
+  </div>
+
+  <script>
+    const charImg = document.getElementById('character-img');
+    const bgm = document.getElementById('bgm');
+    const musicStatus = document.getElementById('music-status');
+    const dialogueText = document.getElementById('dialogue-text');
+    const dialogueAuthor = document.getElementById('dialogue-author');
+
+    // 角色数据与台词
+    const charData = {
+      'ayaka': {
+        img: 'https://pic.imgdb.cn/item/6618cdb368656623253a6691.png',
+        quote: '“大好时光，正如这片美景…不妨再多待一会吧。”',
+        name: '神里绫华'
+      },
+      'zhongli': {
+        img: 'https://pic.imgdb.cn/item/6618cf2368656623253f9e9a.png',
+        quote: '“欲买桂花同载酒，终不似，少年游。”',
+        name: '钟离'
+      },
+      'nahida': {
+        img: 'https://pic.imgdb.cn/item/6618cf67686566232540c497.png',
+        quote: '“知识就是力量，但也要小心被力量迷惑了双眼哦。”',
+        name: '纳西妲'
+      },
+      'furina': {
+        img: 'https://pic.imgdb.cn/item/6618cf9d68656623254199c0.png',
+        quote: '“掌声！欢呼声！为我的登场献上最高的礼赞吧！”',
+        name: '芙宁娜'
+      },
+      'hutao': {
+        img: 'https://pic.imgdb.cn/item/6618ce8c68656623253dde1d.png',
+        quote: '“太阳出来我晒太阳，月亮出来我晒月亮咯~”',
+        name: '胡桃'
+      }
+    };
+
+    // 1. 眼睛（视角）跟随鼠标
+    document.addEventListener('mousemove', (e) => {
+      const x = e.clientX;
+      const y = e.clientY;
+      const centerX = window.innerWidth / 2;
+      const centerY = window.innerHeight / 2;
+      const rotateY = (x - centerX) / 60;
+      const rotateX = -(y - centerY) / 80;
+      charImg.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg) scale(1.05)`;
+    });
+
+    // 2. 角色切换与台词更新
+    function changeChar(key, btn) {
+      document.querySelectorAll('.char-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      charImg.style.opacity = 0;
+      charImg.style.transform = 'translateY(20px)';
+
+      setTimeout(() => {
+        // 更新图片
+        charImg.src = charData[key].img;
+        charImg.style.opacity = 1;
+        charImg.style.transform = 'translateY(0)';
+
+        // 更新台词动画
+        dialogueText.style.opacity = 0;
+        setTimeout(() => {
+          dialogueText.innerText = charData[key].quote;
+          dialogueAuthor.innerText = "—— " + charData[key].name;
+          dialogueText.style.opacity = 1;
+        }, 200);
+      }, 400);
+    }
+
+    // 3. 音乐控制
+    function toggleMusic() {
+      if (bgm.paused) {
+        bgm.play();
+        musicStatus.innerText = "⏸ 暂停音乐";
+      } else {
+        bgm.pause();
+        musicStatus.innerText = "▶️ 播放音乐";
+      }
+    }
+
+    // 4. 樱花飘落特效
+    function createSakura() {
+      const sakura = document.createElement('div');
+      sakura.classList.add('sakura');
+      // 随机大小、位置和飘落时间
+      const size = Math.random() * 15 + 5 + 'px';
+      sakura.style.width = size;
+      sakura.style.height = size;
+      sakura.style.left = Math.random() * window.innerWidth + 'px';
+      const duration = Math.random() * 5 + 5 + 's';
+      sakura.style.animationDuration = duration;
+
+      document.body.appendChild(sakura);
+
+      // 动画结束后移除元素
+      setTimeout(() => {
+        sakura.remove();
+      }, parseFloat(duration) * 1000);
+    }
+
+    // 每隔一定时间生成一片樱花
+    setInterval(createSakura, 300);
+  </script>
+
+</body>
+
+</html>
