@@ -3,192 +3,258 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SHAMELESS - 加拉格之家</title>
+    <title>SHAMELESS - South Side Chicago</title>
     <style>
         :root {
-            --main-red: #8b0000;
-            --dirty-white: #e0e0e0;
-            --glass: rgba(0, 0, 0, 0.8);
+            --red: #a30000;
+            --yellow: #ffcc00;
+            --bg: #0a0a0a;
         }
 
         body, html {
             margin: 0; padding: 0;
-            background: #000;
-            color: var(--dirty-white);
+            background: var(--bg);
+            color: #fff;
             font-family: 'Impact', 'Arial Black', sans-serif;
             overflow-x: hidden;
-            min-height: 100vh;
         }
 
-        /* 背景：南芝加哥街头感 */
-        .background {
+        /* 芝加哥街头背景 */
+        .bg-overlay {
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: url('https://pic.imgdb.cn/item/6618e47068656623257a3e8d.jpg') center/cover no-repeat;
-            z-index: -5;
-            filter: grayscale(0.5) brightness(0.3);
+            background: url('https://images.unsplash.com/photo-1516738901171-8eb4fc13bd20?q=80&w=2070&auto=format&fit=crop') center/cover;
+            z-index: -2;
+            filter: grayscale(0.8) brightness(0.2) contrast(1.2);
         }
 
-        /* 钞票掉落特效 */
-        .money {
+        /* 钞票掉落特效样式 */
+        .bill {
             position: fixed;
+            color: #85bb65;
+            font-size: 28px;
+            font-weight: bold;
             pointer-events: none;
             z-index: -1;
-            color: #85bb65;
-            font-weight: bold;
-            font-size: 24px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
             animation: fall linear forwards;
         }
 
         @keyframes fall {
             0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(105vh) rotate(360deg); opacity: 0; }
+            100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
         }
 
-        /* 内容容器 */
+        /* 主容器 */
         .container {
-            max-width: 600px;
-            margin: 50px auto;
-            padding: 30px;
-            background: var(--glass);
-            border: 3px solid #444;
-            text-align: left;
-            box-shadow: 10px 10px 0px var(--main-red);
+            max-width: 800px;
+            margin: 60px auto;
+            padding: 40px;
+            border-left: 10px solid var(--red);
+            background: rgba(0, 0, 0, 0.85);
+            position: relative;
+            z-index: 10;
+        }
+
+        /* 可编辑文字区域 */
+        .editable {
+            padding: 5px;
+            border: 1px transparent dashed;
+            transition: 0.3s;
+            cursor: text;
+        }
+
+        .editable:hover {
+            border-color: var(--yellow);
+            background: rgba(255, 204, 0, 0.1);
         }
 
         h1 {
-            font-size: 4em;
+            font-size: 5rem;
+            margin: 0;
+            line-height: 0.9;
             text-transform: uppercase;
             color: #fff;
-            margin: 0;
-            letter-spacing: -2px;
-            border-bottom: 5px solid var(--main-red);
-            display: inline-block;
         }
 
-        /* 角色图片 */
-        #character-box {
+        .quote-section {
+            margin-top: 40px;
+            font-size: 1.8rem;
+            line-height: 1.3;
+            font-family: 'Georgia', serif;
+            color: #ddd;
+        }
+
+        /* 角色头像组 */
+        #char-display {
             position: fixed;
             bottom: 0;
-            right: 0;
-            width: 400px;
+            right: 20px;
+            width: 450px;
             z-index: 100;
             pointer-events: none;
         }
 
-        #character-img {
+        #char-img {
             width: 100%;
-            display: block;
+            filter: drop-shadow(0 0 20px rgba(0,0,0,0.8));
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             pointer-events: auto;
-            transition: 0.3s;
-            filter: contrast(1.2) sepia(0.2);
         }
 
-        /* 角色选择器 */
-        .selector {
-            position: fixed;
-            left: 20px;
-            bottom: 20px;
-            z-index: 1000;
-            display: flex;
-            gap: 15px;
-        }
-
-        .selector-item {
-            width: 70px;
-            height: 70px;
-            border: 3px solid #fff;
-            cursor: pointer;
-            background-size: cover;
-            background-position: center;
-            filter: grayscale(1);
-            transition: 0.3s;
-        }
-
-        .selector-item:hover { filter: grayscale(0); transform: translateY(-10px); border-color: var(--main-red); }
-
-        /* 音乐按钮 */
-        .music-btn {
+        /* 控制台 */
+        .controls {
             position: fixed;
             top: 20px;
             right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .btn {
             background: #fff;
             color: #000;
             border: none;
             padding: 10px 20px;
             font-weight: bold;
             cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .btn:hover { background: var(--red); color: #fff; }
+
+        .selector {
+            position: fixed;
+            left: 20px;
+            bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
             z-index: 1000;
         }
 
-        .quote-box {
-            margin-top: 30px;
-            font-family: serif;
-            font-size: 1.5em;
-            line-height: 1.4;
-            color: #ccc;
+        .char-thumb {
+            width: 65px;
+            height: 65px;
+            border: 3px solid #fff;
+            background-size: cover;
+            background-position: center;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .char-thumb:hover { transform: scale(1.1); border-color: var(--red); }
+
+        /* 编辑模式提示 */
+        .edit-hint {
+            position: absolute;
+            top: -20px;
+            right: 0;
+            font-size: 0.8rem;
+            color: var(--yellow);
+            text-transform: uppercase;
         }
     </style>
 </head>
 <body>
 
-<div class="background"></div>
+<div class="bg-overlay"></div>
 
-<button class="music-btn" onclick="toggleMusic()">📻 PLAY SHAMELESS THEME</button>
-<audio id="audio" loop src="https://music.163.com/song/media/outer/url?id=28188486.mp3"></audio>
-
-<div class="container">
-    <h1>SHAMELESS</h1>
-    <div class="quote-box" id="quote">"This is not a high class neighborhood."</div>
-    <p style="margin-top:20px; color: #888;">South Side, Chicago.</p>
+<div class="controls">
+    <button class="btn" onclick="toggleAudio()">📻 Play Theme</button>
+    <button class="btn" style="background: var(--yellow);" onclick="saveChanges()">💾 Save Changes</button>
 </div>
+
+<audio id="bgm" loop src="https://music.163.com/song/media/outer/url?id=28188486.mp3"></audio>
 
 <div class="selector">
-    <div class="selector-item" title="Fiona" onclick="changeChar('fiona')" style="background-image: url('https://pic.imgdb.cn/item/6618e69368656623258162e8.jpg')"></div>
-    <div class="selector-item" title="Frank" onclick="changeChar('frank')" style="background-image: url('https://pic.imgdb.cn/item/6618e6936865662325816301.jpg')"></div>
+    <div class="char-thumb" onclick="switchChar('fiona')" style="background-image: url('https://api.dicebear.com/7.x/avataaars/svg?seed=Fiona')"></div>
+    <div class="char-thumb" onclick="switchChar('frank')" style="background-image: url('https://api.dicebear.com/7.x/avataaars/svg?seed=Frank')"></div>
 </div>
 
-<div id="character-box">
-    <img id="character-img" src="https://pic.imgdb.cn/item/6618e69368656623258162e8.jpg" alt="Shameless Character">
+<div class="container">
+    <span class="edit-hint">Click text to edit</span>
+    <h1 class="editable" id="main-title" contenteditable="true">SHAMELESS</h1>
+    <div class="quote-section">
+        <p class="editable" id="quote-text" contenteditable="true">"This is not a high class neighborhood. We don't have a lot of money, but we have each other."</p>
+    </div>
+    <div style="margin-top: 50px; opacity: 0.5; font-size: 0.9rem;">
+        SOUTH SIDE CHICAGO • EST. 2011
+    </div>
+</div>
+
+<div id="char-display">
+    <img id="char-img" src="https://www.themoviedb.org/t/p/original/m99QcE7iWzPqO8B490S7AAnUeP0.png" onerror="this.src='https://via.placeholder.com/400x600/8b0000/ffffff?text=Fiona+Not+Found'">
 </div>
 
 <script>
-    // 1. 掉钱特效（很有加拉格特色）
-    function spawnMoney() {
-        const m = document.createElement('div');
-        m.className = 'money';
-        m.innerText = '$';
-        m.style.left = Math.random() * 100 + 'vw';
+    // 1. 掉钱特效逻辑
+    function createMoney() {
+        const bill = document.createElement('div');
+        bill.className = 'bill';
+        bill.innerText = '$';
+        bill.style.left = Math.random() * 100 + 'vw';
         const duration = Math.random() * 3 + 2;
-        m.style.animationDuration = duration + 's';
-        document.body.appendChild(m);
-        setTimeout(() => m.remove(), duration * 1000);
+        bill.style.animationDuration = duration + 's';
+        document.body.appendChild(bill);
+        setTimeout(() => bill.remove(), duration * 1000);
     }
-    setInterval(spawnMoney, 300);
+    setInterval(createMoney, 400);
 
-    // 2. 角色切换逻辑
-    const chars = {
+    // 2. 角色切换数据
+    const charData = {
         fiona: {
-            img: 'https://pic.imgdb.cn/item/6618e69368656623258162e8.jpg',
-            text: '"I did my job! I am done!"'
+            img: 'https://www.themoviedb.org/t/p/original/m99QcE7iWzPqO8B490S7AAnUeP0.png',
+            quote: '"I did my job! I am done!"'
         },
         frank: {
-            img: 'https://pic.imgdb.cn/item/6618e6936865662325816301.jpg',
-            text: '"Time is precious, wasted it wisely."'
+            img: 'https://www.themoviedb.org/t/p/original/uO8vXG6e9VvO1HlIlyF8Zf9H1wA.png',
+            quote: '"Time is precious. Waste it wisely."'
         }
     };
 
-    function changeChar(name) {
-        document.getElementById('character-img').src = chars[name].img;
-        document.getElementById('quote').innerText = chars[name].text;
+    function switchChar(key) {
+        const img = document.getElementById('char-img');
+        const quote = document.getElementById('quote-text');
+        
+        img.style.transform = 'translateX(100px)';
+        img.style.opacity = '0';
+        
+        setTimeout(() => {
+            img.src = charData[key].img;
+            quote.innerText = charData[key].quote;
+            img.style.opacity = '1';
+            img.style.transform = 'translateX(0)';
+        }, 400);
     }
 
-    // 3. 音乐播放
-    function toggleMusic() {
-        const a = document.getElementById('audio');
-        if(a.paused) a.play(); else a.pause();
+    // 3. 音乐控制
+    function toggleAudio() {
+        const audio = document.getElementById('bgm');
+        audio.paused ? audio.play() : audio.pause();
+    }
+
+    // 4. 文字编辑保存功能 (保存到本地浏览器缓存)
+    function saveChanges() {
+        const title = document.getElementById('main-title').innerText;
+        const quote = document.getElementById('quote-text').innerText;
+        localStorage.setItem('shameless_title', title);
+        localStorage.setItem('shameless_quote', quote);
+        alert('Changes saved locally! (Only visible on this device)');
+    }
+
+    // 页面加载时恢复保存的文字
+    window.onload = () => {
+        if(localStorage.getItem('shameless_title')) {
+            document.getElementById('main-title').innerText = localStorage.getItem('shameless_title');
+        }
+        if(localStorage.getItem('shameless_quote')) {
+            document.getElementById('quote-text').innerText = localStorage.getItem('shameless_quote');
+        }
     }
 </script>
+
 </body>
 </html>
