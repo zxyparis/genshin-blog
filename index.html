@@ -3,59 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>提瓦特时光机 - 个人空间</title>
+    <title>SHAMELESS - 加拉格之家</title>
     <style>
         :root {
-            --genshin-gold: #ece5d8;
-            --accent: #d3bc8e;
-            --glass: rgba(0, 0, 0, 0.6);
+            --main-red: #8b0000;
+            --dirty-white: #e0e0e0;
+            --glass: rgba(0, 0, 0, 0.8);
         }
 
         body, html {
             margin: 0; padding: 0;
-            background: #1a1c22;
-            color: var(--genshin-gold);
+            background: #000;
+            color: var(--dirty-white);
+            font-family: 'Impact', 'Arial Black', sans-serif;
             overflow-x: hidden;
             min-height: 100vh;
         }
 
-        /* 背景图 */
+        /* 背景：南芝加哥街头感 */
         .background {
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: url('https://pic.imgdb.cn/item/6618cc926865662325372338.jpg') center/cover no-repeat;
-            z-index: -2;
-            filter: brightness(0.5);
+            background: url('https://pic.imgdb.cn/item/6618e47068656623257a3e8d.jpg') center/cover no-repeat;
+            z-index: -5;
+            filter: grayscale(0.5) brightness(0.3);
         }
 
-        /* 樱花特效层 - 提高层级 */
-        #sakura-container {
+        /* 钞票掉落特效 */
+        .money {
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
             pointer-events: none;
-            z-index: -1; 
-        }
-
-        .sakura {
-            position: absolute;
-            background: #ffb7c5; /* 更明显的粉色 */
-            border-radius: 100% 0 100% 100%;
-            opacity: 0.7;
-            animation: fall linear infinite;
+            z-index: -1;
+            color: #85bb65;
+            font-weight: bold;
+            font-size: 24px;
+            animation: fall linear forwards;
         }
 
         @keyframes fall {
-            0% { transform: translateY(-10vh) rotate(0deg); }
-            100% { transform: translateY(110vh) rotate(360deg); }
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(105vh) rotate(360deg); opacity: 0; }
         }
 
-        /* 角色组件 */
+        /* 内容容器 */
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 30px;
+            background: var(--glass);
+            border: 3px solid #444;
+            text-align: left;
+            box-shadow: 10px 10px 0px var(--main-red);
+        }
+
+        h1 {
+            font-size: 4em;
+            text-transform: uppercase;
+            color: #fff;
+            margin: 0;
+            letter-spacing: -2px;
+            border-bottom: 5px solid var(--main-red);
+            display: inline-block;
+        }
+
+        /* 角色图片 */
         #character-box {
             position: fixed;
-            bottom: 0; left: 0;
-            width: 350px;
+            bottom: 0;
+            right: 0;
+            width: 400px;
             z-index: 100;
             pointer-events: none;
         }
@@ -64,116 +81,113 @@
             width: 100%;
             display: block;
             pointer-events: auto;
-            transition: opacity 0.5s;
+            transition: 0.3s;
+            filter: contrast(1.2) sepia(0.2);
         }
 
-        /* 角色切换按钮 */
-        .char-selector {
+        /* 角色选择器 */
+        .selector {
             position: fixed;
-            left: 20px; top: 50%;
-            transform: translateY(-50%);
-            display: flex; flex-direction: column; gap: 12px;
-            z-index: 101;
-            background: rgba(0,0,0,0.4);
-            padding: 10px; border-radius: 30px;
+            left: 20px;
+            bottom: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 15px;
         }
 
-        .char-btn {
-            width: 45px; height: 45px;
-            border-radius: 50%;
-            border: 2px solid var(--accent);
+        .selector-item {
+            width: 70px;
+            height: 70px;
+            border: 3px solid #fff;
             cursor: pointer;
             background-size: cover;
+            background-position: center;
+            filter: grayscale(1);
             transition: 0.3s;
         }
 
-        .char-btn:hover { transform: scale(1.2); }
+        .selector-item:hover { filter: grayscale(0); transform: translateY(-10px); border-color: var(--main-red); }
 
-        /* 内容区 */
-        .container {
-            max-width: 800px;
-            margin: 100px auto;
-            padding: 30px;
-            background: var(--glass);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            border: 1px solid var(--accent);
+        /* 音乐按钮 */
+        .music-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #fff;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1000;
         }
 
-        .music-ctrl {
-            position: fixed; top: 20px; right: 20px;
-            background: var(--accent);
-            color: #222;
-            padding: 8px 15px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: bold;
-            z-index: 200;
+        .quote-box {
+            margin-top: 30px;
+            font-family: serif;
+            font-size: 1.5em;
+            line-height: 1.4;
+            color: #ccc;
         }
     </style>
 </head>
 <body>
 
 <div class="background"></div>
-<div id="sakura-container"></div>
 
-<div class="music-ctrl" onclick="toggleMusic()">🎵 点击播放 BGM</div>
-<audio id="bgm" loop src="https://music.163.com/song/media/outer/url?id=1481164965.mp3"></audio>
-
-<div class="char-selector">
-    <div class="char-btn" onclick="changeChar('ayaka')" style="background-image: url('https://upload-static.mihoyo.com/content_design_render/original/content_design_render159e2182d7c.png')"></div>
-    <div class="char-btn" onclick="changeChar('zhongli')" style="background-image: url('https://upload-static.mihoyo.com/content_design_render/original/content_design_render6f7b9933095.png')"></div>
-</div>
+<button class="music-btn" onclick="toggleMusic()">📻 PLAY SHAMELESS THEME</button>
+<audio id="audio" loop src="https://music.163.com/song/media/outer/url?id=28188486.mp3"></audio>
 
 <div class="container">
-    <h1>提瓦特私人博客</h1>
-    <p>如果看不到看板娘，请检查网络是否能访问原神官网图片。</p>
-    <div id="dialogue" style="font-style: italic; color: var(--accent); margin-top: 20px;">
-        “大好时光，正如这片美景…”
-    </div>
+    <h1>SHAMELESS</h1>
+    <div class="quote-box" id="quote">"This is not a high class neighborhood."</div>
+    <p style="margin-top:20px; color: #888;">South Side, Chicago.</p>
+</div>
+
+<div class="selector">
+    <div class="selector-item" title="Fiona" onclick="changeChar('fiona')" style="background-image: url('https://pic.imgdb.cn/item/6618e69368656623258162e8.jpg')"></div>
+    <div class="selector-item" title="Frank" onclick="changeChar('frank')" style="background-image: url('https://pic.imgdb.cn/item/6618e6936865662325816301.jpg')"></div>
 </div>
 
 <div id="character-box">
-    <img id="character-img" src="https://upload-static.mihoyo.com/content_design_render/original/content_design_render159e2182d7c.png">
+    <img id="character-img" src="https://pic.imgdb.cn/item/6618e69368656623258162e8.jpg" alt="Shameless Character">
 </div>
 
 <script>
-    // 1. 樱花特效
-    function createSakura() {
-        const container = document.getElementById('sakura-container');
-        const s = document.createElement('div');
-        s.className = 'sakura';
-        const size = Math.random() * 10 + 5 + 'px';
-        s.style.width = size;
-        s.style.height = size;
-        s.style.left = Math.random() * 100 + 'vw';
-        s.style.animationDuration = Math.random() * 3 + 4 + 's';
-        container.appendChild(s);
-        setTimeout(() => s.remove(), 7000);
+    // 1. 掉钱特效（很有加拉格特色）
+    function spawnMoney() {
+        const m = document.createElement('div');
+        m.className = 'money';
+        m.innerText = '$';
+        m.style.left = Math.random() * 100 + 'vw';
+        const duration = Math.random() * 3 + 2;
+        m.style.animationDuration = duration + 's';
+        document.body.appendChild(m);
+        setTimeout(() => m.remove(), duration * 1000);
     }
-    setInterval(createSakura, 200);
+    setInterval(spawnMoney, 300);
 
-    // 2. 眼睛跟随 (简化版)
-    document.addEventListener('mousemove', (e) => {
-        const img = document.getElementById('character-img');
-        const x = (e.clientX - window.innerWidth/2) / 50;
-        const y = (e.clientY - window.innerHeight/2) / 50;
-        img.style.transform = `rotateY(${x}deg) rotateX(${-y}deg)`;
-    });
-
-    // 3. 切换角色
-    const data = {
-        ayaka: 'https://upload-static.mihoyo.com/content_design_render/original/content_design_render159e2182d7c.png',
-        zhongli: 'https://upload-static.mihoyo.com/content_design_render/original/content_design_render6f7b9933095.png'
+    // 2. 角色切换逻辑
+    const chars = {
+        fiona: {
+            img: 'https://pic.imgdb.cn/item/6618e69368656623258162e8.jpg',
+            text: '"I did my job! I am done!"'
+        },
+        frank: {
+            img: 'https://pic.imgdb.cn/item/6618e6936865662325816301.jpg',
+            text: '"Time is precious, wasted it wisely."'
+        }
     };
+
     function changeChar(name) {
-        document.getElementById('character-img').src = data[name];
+        document.getElementById('character-img').src = chars[name].img;
+        document.getElementById('quote').innerText = chars[name].text;
     }
 
-    // 4. 音乐
+    // 3. 音乐播放
     function toggleMusic() {
-        const audio = document.getElementById('bgm');
-        if(audio.paused) audio.play(); else audio.pause();
+        const a = document.getElementById('audio');
+        if(a.paused) a.play(); else a.pause();
     }
 </script>
 </body>
